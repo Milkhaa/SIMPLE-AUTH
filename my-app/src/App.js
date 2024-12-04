@@ -1,26 +1,26 @@
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 import { useAuth } from './context/AuthContext';
-import { useState } from 'react';
+import Register from './components/Register';
+import Login from './components/Login';
+import Posts from './components/Posts';
+import NavBar from './components/NavBar';
+
+const Home = () => {
+  const { user } = useAuth();
+  
+  return (
+    <div className="App-header">
+      <div className="user-profile">
+        <h1>Welcome, {user?.username}!</h1>
+        <p>Email: {user?.email}</p>
+      </div>
+    </div>
+  );
+};
 
 function App() {
-  const { user, login, logout, loading, error, isAuthenticated } = useAuth();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      await login(username, password);
-    } catch (err) {
-      // Error is handled by AuthContext
-      console.error('Login failed:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -32,65 +32,20 @@ function App() {
     );
   }
 
-  if (isAuthenticated) {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <div className="user-profile">
-            <h1>Welcome, {user.name}!</h1>
-            <p>Email: {user.email}</p>
-            <button 
-              className="logout-button" 
-              onClick={logout}
-              disabled={loading}
-            >
-              Logout
-            </button>
-          </div>
-        </header>
-      </div>
-    );
-  }
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="login-container">
-          <h2>Login</h2>
-          {error && <div className="error-message">{error}</div>}
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isSubmitting}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isSubmitting}
-                required
-                minLength={6}
-              />
-            </div>
-            <button 
-              type="submit" 
-              className="login-button"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Logging in...' : 'Login'}
-            </button>
-          </form>
+    <Router>
+      <div className="App">
+        <NavBar />
+        <div className="content">
+          <Routes>
+            <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+            <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+            <Route path="/posts" element={user ? <Posts /> : <Navigate to="/login" />} />
+            <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+          </Routes>
         </div>
-      </header>
-    </div>
+      </div>
+    </Router>
   );
 }
 
