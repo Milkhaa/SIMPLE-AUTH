@@ -10,10 +10,32 @@ const Home = () => {
   const { user } = useAuth();
   
   return (
-    <div className="App-header">
-      <div className="user-profile">
+    <div className="profile-container">
+      <div className="profile-header">
+        <div className="profile-avatar">
+          {user?.username?.charAt(0).toUpperCase()}
+        </div>
         <h1>Welcome, {user?.username}!</h1>
-        <p>Email: {user?.email}</p>
+      </div>
+      
+      <div className="profile-content">
+        <div className="profile-section">
+          <h2>Profile Information</h2>
+          <div className="profile-info">
+            <div className="info-item">
+              <label>Username</label>
+              <p>{user?.username}</p>
+            </div>
+            <div className="info-item">
+              <label>Email</label>
+              <p>{user?.email}</p>
+            </div>
+            <div className="info-item">
+              <label>Member Since</label>
+              <p>{new Date(user?.createdAt || Date.now()).toLocaleDateString()}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
