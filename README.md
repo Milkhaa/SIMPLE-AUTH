@@ -1,12 +1,31 @@
 
 # Steps to run the frontend application
 ```
+cd my-app
 npm install
 npm start
 ```
 
-# Login
+# Steps to run the backend application 
+```
+cd backend
+mvn clean install
+mvn spring-boot:run
+``` 
+# Steps to run a local MySQL database
+```
+docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=my-secret-pw -d -p 3306:3306 mysql:latest
+```
+
+Connect using:
+```
+mysql -h 127.0.0.1 -P 3306 -u root -p
+```
+
+
+# How does the Authentication work here?
 When the user enters the username and password, the application will make a call to the backend to validate the credentials.
+Backend return JWT token if username and password are correct.
 
 Example API Request:
 ```
@@ -30,7 +49,7 @@ Example API response:
     }
 }
 ```
-Backend return JWT token if username and password are correct.
+
 
 ## JWT Token Generation (if credentials are valid):
 - Creates JWT token containing:
@@ -51,7 +70,7 @@ The JWT token consists of three parts separated by dots:
 2. Payload: Contains claims
 ```
 {
-    "sub": "Sunil",
+    "sub": "Sunil",//Username
     "iat": 1733331876,
     "exp": 1733418276
 }
@@ -63,5 +82,5 @@ Signing them with secret key using HS256 algorithm
 
 # Frontend Token Storage
 - The JWT token is stored in the browser's local storage under the key "authToken".
-- This token can be sent with all the subsequent requests to the backend[not yet implemented in this example]
+- This token can be sent with all the subsequent requests to the backend[Being used to fetch the user posts from the backend]
 - On Logout , this key `authToken` will be removed from local storage.
